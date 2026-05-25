@@ -1,0 +1,601 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Spring Fly-Out to T82 | Texins Flying Club</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,700&family=DM+Sans:wght@300;400;500&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --sky: #0a1628;
+    --horizon: #c8873a;
+    --gold: #e8a84c;
+    --cream: #f5f0e8;
+    --warm-white: #faf8f4;
+    --text: #1a1208;
+    --muted: #6b5e4a;
+    --rule: #d4c4a8;
+    --accent: #bf4e2a;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--warm-white);
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 300;
+    line-height: 1.8;
+    overflow-x: hidden;
+  }
+
+  /* ── HERO ── */
+  .hero {
+    position: relative;
+    height: 100vh;
+    min-height: 600px;
+    background: var(--sky);
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    overflow: hidden;
+  }
+
+  .hero-img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    opacity: 0.55;
+  }
+
+  .hero-gradient {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      to bottom,
+      transparent 30%,
+      rgba(10,22,40,0.6) 65%,
+      rgba(10,22,40,0.95) 100%
+    );
+  }
+
+  .hero-content {
+    position: relative;
+    z-index: 2;
+    padding: 3rem 4rem 4rem;
+    max-width: 900px;
+    animation: fadeUp 1.2s ease both;
+  }
+
+  .club-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.72rem;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 1.2rem;
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+  }
+  .club-label::before {
+    content: '';
+    display: inline-block;
+    width: 32px;
+    height: 1px;
+    background: var(--gold);
+  }
+
+  .hero h1 {
+    font-family: 'Playfair Display', Georgia, serif;
+    font-size: clamp(2.8rem, 6vw, 5.2rem);
+    font-weight: 900;
+    line-height: 1.05;
+    color: #fff;
+    margin-bottom: 1rem;
+  }
+
+  .hero h1 em {
+    font-style: italic;
+    color: var(--gold);
+  }
+
+  .hero-meta {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.72rem;
+    letter-spacing: 0.12em;
+    color: rgba(255,255,255,0.5);
+    margin-top: 1.5rem;
+    display: flex;
+    gap: 2rem;
+  }
+
+  .scroll-hint {
+    position: absolute;
+    bottom: 2rem;
+    right: 4rem;
+    z-index: 2;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.4rem;
+    color: rgba(255,255,255,0.35);
+    font-family: 'DM Mono', monospace;
+    font-size: 0.6rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+  }
+  .scroll-line {
+    width: 1px;
+    height: 48px;
+    background: linear-gradient(to bottom, rgba(255,255,255,0.4), transparent);
+    animation: scrollPulse 2s ease-in-out infinite;
+  }
+
+  /* ── STATS BAR ── */
+  .stats-bar {
+    background: var(--sky);
+    color: #fff;
+    display: flex;
+    justify-content: center;
+    gap: 0;
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+  }
+  .stat {
+    padding: 1.4rem 3.5rem;
+    text-align: center;
+    border-right: 1px solid rgba(255,255,255,0.08);
+  }
+  .stat:last-child { border-right: none; }
+  .stat-num {
+    font-family: 'Playfair Display', serif;
+    font-size: 2.2rem;
+    font-weight: 700;
+    color: var(--gold);
+    display: block;
+    line-height: 1;
+  }
+  .stat-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.62rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.45);
+    margin-top: 0.3rem;
+    display: block;
+  }
+
+  /* ── MAIN CONTENT ── */
+  .article {
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 5rem 2rem;
+  }
+
+  .lede {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.35rem;
+    font-style: italic;
+    line-height: 1.65;
+    color: var(--muted);
+    margin-bottom: 3rem;
+    padding-bottom: 3rem;
+    border-bottom: 1px solid var(--rule);
+  }
+
+  p {
+    margin-bottom: 1.4rem;
+    font-size: 1.05rem;
+  }
+
+  /* ── SECTION HEADERS ── */
+  .section-header {
+    display: flex;
+    align-items: baseline;
+    gap: 1rem;
+    margin: 3.5rem 0 1.4rem;
+  }
+  .section-num {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.65rem;
+    letter-spacing: 0.18em;
+    color: var(--accent);
+    flex-shrink: 0;
+  }
+  .section-header h2 {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.55rem;
+    font-weight: 700;
+    line-height: 1.2;
+  }
+
+  /* ── PULL QUOTE ── */
+  .pull-quote {
+    margin: 3rem -3rem;
+    padding: 2.2rem 3rem;
+    border-left: 3px solid var(--gold);
+    background: linear-gradient(135deg, rgba(232,168,76,0.07), transparent);
+    position: relative;
+  }
+  .pull-quote p {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.3rem;
+    font-style: italic;
+    line-height: 1.55;
+    color: var(--text);
+    margin: 0;
+  }
+  .pull-quote cite {
+    display: block;
+    margin-top: 0.8rem;
+    font-family: 'DM Mono', monospace;
+    font-size: 0.65rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--muted);
+    font-style: normal;
+  }
+
+  /* ── PHOTO GRID ── */
+  .photo-section {
+    margin: 4rem -4rem;
+    padding: 0;
+  }
+
+  .photo-full {
+    width: 100%;
+    display: block;
+    margin-bottom: 0.4rem;
+  }
+  .photo-full img {
+    width: 100%;
+    height: 420px;
+    object-fit: cover;
+    display: block;
+  }
+
+  .photo-grid-2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.4rem;
+    margin-bottom: 0.4rem;
+  }
+  .photo-grid-2 img {
+    width: 100%;
+    height: 300px;
+    object-fit: cover;
+    display: block;
+  }
+
+  .photo-grid-3 {
+    display: grid;
+    grid-template-columns: 1.4fr 1fr 1fr;
+    gap: 0.4rem;
+    margin-bottom: 0.4rem;
+  }
+  .photo-grid-3 img {
+    width: 100%;
+    height: 260px;
+    object-fit: cover;
+    display: block;
+  }
+
+  .photo-caption {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.65rem;
+    letter-spacing: 0.1em;
+    color: var(--muted);
+    padding: 0.6rem 0 0;
+    text-align: center;
+  }
+
+  /* ── HIGHLIGHT BOX ── */
+  .highlight-box {
+    background: var(--sky);
+    color: #fff;
+    padding: 2.5rem 3rem;
+    margin: 3.5rem -3rem;
+    position: relative;
+    overflow: hidden;
+  }
+  .highlight-box::before {
+    content: '✈';
+    position: absolute;
+    right: 2rem;
+    top: 50%;
+    transform: translateY(-50%) rotate(-20deg);
+    font-size: 7rem;
+    opacity: 0.05;
+  }
+  .highlight-box h3 {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--gold);
+    margin-bottom: 0.8rem;
+  }
+  .highlight-box p {
+    font-size: 0.95rem;
+    color: rgba(255,255,255,0.75);
+    margin: 0;
+  }
+
+  /* ── CLOSING ── */
+  .closing {
+    margin-top: 4rem;
+    padding-top: 3rem;
+    border-top: 1px solid var(--rule);
+    text-align: center;
+  }
+  .closing-mark {
+    font-family: 'Playfair Display', serif;
+    font-size: 3.5rem;
+    font-style: italic;
+    color: var(--gold);
+    display: block;
+    margin-bottom: 1rem;
+    line-height: 1;
+  }
+  .closing p {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.25rem;
+    font-style: italic;
+    color: var(--muted);
+    max-width: 520px;
+    margin: 0 auto 1.2rem;
+  }
+  .byline {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.65rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--rule);
+  }
+
+  /* ── FOOTER ── */
+  footer {
+    background: var(--sky);
+    color: rgba(255,255,255,0.35);
+    text-align: center;
+    padding: 2rem;
+    font-family: 'DM Mono', monospace;
+    font-size: 0.65rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+  }
+
+  /* ── ANIMATIONS ── */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(30px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes scrollPulse {
+    0%, 100% { opacity: 0.4; }
+    50%       { opacity: 1; }
+  }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 768px) {
+    .hero-content { padding: 2rem 1.5rem 3rem; }
+    .stats-bar { flex-wrap: wrap; }
+    .stat { padding: 1.2rem 2rem; }
+    .photo-section { margin: 3rem -1rem; }
+    .pull-quote { margin: 2rem 0; }
+    .highlight-box { margin: 2rem 0; }
+    .photo-grid-2, .photo-grid-3 { grid-template-columns: 1fr; }
+    .photo-grid-2 img, .photo-grid-3 img { height: 220px; }
+    .photo-full img { height: 260px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- HERO -->
+<header class="hero">
+  <img class="hero-img" src="IMG_2044.jpeg" alt="Sunrise departure over Texas lakes">
+  <div class="hero-gradient"></div>
+  <div class="hero-content">
+    <div class="club-label">Texins Flying Club</div>
+    <h1>Spring Fly-Out<br>to <em>T82</em></h1>
+    <div class="hero-meta">
+      <span>Gillespie County Airport</span>
+      <span>·</span>
+      <span>9 Aircraft &nbsp;·&nbsp; 22 People</span>
+      <span>·</span>
+      <span>One Incredible Day</span>
+    </div>
+  </div>
+  <div class="scroll-hint">
+    <div class="scroll-line"></div>
+    Read
+  </div>
+</header>
+
+<!-- STATS BAR -->
+<div class="stats-bar">
+  <div class="stat"><span class="stat-num">9</span><span class="stat-label">Aircraft</span></div>
+  <div class="stat"><span class="stat-num">22</span><span class="stat-label">Pilots & Passengers</span></div>
+  <div class="stat"><span class="stat-num">8,000</span><span class="stat-label">Feet Cruise Altitude</span></div>
+  <div class="stat"><span class="stat-num">T82</span><span class="stat-label">Destination</span></div>
+</div>
+
+<!-- ARTICLE -->
+<article class="article">
+
+  <p class="lede">Like all Texins Flying Club events, this one didn't just happen. It was built over months of planning, coordination, and preparation — and then the sky delivered its part: a bluebird day, nearly perfect spring weather, light winds, smooth air, and clear skies that set the stage for something worth remembering.</p>
+
+  <!-- SAFETY -->
+  <div class="section-header">
+    <span class="section-num">01 ——</span>
+    <h2>Safety First. Always.</h2>
+  </div>
+
+  <p>Before a single engine started, the tone was already set. At our March 14th membership meeting, crews aligned, expectations were clear, and safety was front and center. Each Pilot in Command owned their decision. Everyone was reminded to fly their own flight — no pressure to launch, no pressure to continue.</p>
+
+  <p>The goal was simple: arrive safe, enjoy the day, return safe. That mindset isn't just something we say. It's how this club operates.</p>
+
+  <!-- DEPARTURE PHOTO -->
+  <div class="photo-section">
+    <div class="photo-full">
+      <img src="IMG_2044.jpeg" alt="Sunrise departure — wing over Texas lakes">
+    </div>
+    <div class="photo-full">
+      <img src="8379653002297717852.jpg" alt="GPS showing the TFC conga line en route to T82">
+    </div>
+    <p class="photo-caption">Left: Wheels up just before sunrise. Right: ADS-B traffic — multiple TFC aircraft in trail heading south.</p>
+  </div>
+
+  <!-- WHEELS UP -->
+  <div class="section-header">
+    <span class="section-num">02 ——</span>
+    <h2>Wheels Up at First Light</h2>
+  </div>
+
+  <p>With that foundation in place, most crews launched right at sunrise — some even just before. Departures weren't planned to be staggered, but it worked out that way. Airplanes flowed out cleanly and efficiently, exactly how you'd want it.</p>
+
+  <div class="pull-quote">
+    <p>"Hey…we're seeing a lot of flight plans to T82 this morning. What's happening down there today?"</p>
+    <cite>— McKinney Tower, upon receiving the TFC IFR clearance request</cite>
+  </div>
+
+  <p>That was the moment it clicked. This wasn't just a fly-out. This was Texins Flying Club showing up.</p>
+
+  <p>The flight south was exactly what you hope for — cruising at 8,000 feet, smooth air, no surprises. Each crew managed their own timing and routing, just as planned, with no pressure to bunch up or force coordination.</p>
+
+  <p>Arriving into Gillespie County Airport, things lined up just as well. With only a couple of aircraft in the pattern, we crossed midfield, entered left downwind for Runway 32, and landed without delay. The south ramp was full, as expected, but the north ramp had ample parking for the whole group.</p>
+
+  <!-- HANGAR HOTEL -->
+  <div class="section-header">
+    <span class="section-num">03 ——</span>
+    <h2>The Hangar Hotel</h2>
+  </div>
+
+  <p>By 10:30am, the full group had gathered at the Tiki Hut to kick off the day properly. First stop: the Hangar Hotel — and calling it "just a stop" doesn't do it justice. It's an experience.</p>
+
+  <p>Designed around a full WWII theme, the owners set out to create both a hotel and diner that feels like stepping back into the 1940s. Every room and detail reflects that vision — from the vintage travel posters lining the walls to the period artifacts throughout the lobby.</p>
+
+  <!-- HANGAR HOTEL PHOTOS -->
+  <div class="photo-section">
+    <div class="photo-full">
+      <img src="IMG_2060.jpeg" alt="Hangar Hotel exterior — WWII themed aviation hotel">
+    </div>
+    <div class="photo-grid-2">
+      <img src="IMG_2067.jpeg" alt="Group gathered outside the Hangar Hotel">
+      <img src="IMG_2070.jpeg" alt="Inside the Hangar Hotel lobby with WWII decor">
+    </div>
+    <p class="photo-caption">The Hangar Hotel at Gillespie County Airport — a WWII-themed gem that draws pilots from across the state.</p>
+  </div>
+
+  <p>While gathered in the lobby, Cindy brought the place to life, sharing the story behind it and pointing out a number of WWII-era artifacts on display. Two highlights stood out: the Officer's Club, which opens in the evenings with live music and drinks, and the viewing balcony — where you can sit back, relax, and watch aircraft arrive and depart.</p>
+
+  <p>It's the kind of place you don't rush through.</p>
+
+  <!-- HISTORY -->
+  <div class="section-header">
+    <span class="section-num">04 ——</span>
+    <h2>The Story Behind the Field</h2>
+  </div>
+
+  <p>From there, we walked over to the terminal building for one of the most meaningful parts of the day. Dennis Hannemann shared the story of his father, Hans Hannemann, and the founding of Gillespie County Airport.</p>
+
+  <p>Hans wasn't just involved — he drove it. From pushing through a contested bond election to helping establish early operations, he played a central role in bringing the airport to life.</p>
+
+  <div class="highlight-box">
+    <h3>Lighting the Way</h3>
+    <p>In the airport's earliest days, there were no runway lights. Pilots would call ahead, and Hans Hannemann would personally coordinate arrivals — lanterns set out, cars positioned along the runway to light the way for aircraft landing at night. It's the kind of dedication that built general aviation from the ground up.</p>
+  </div>
+
+  <!-- TERMINAL PHOTO -->
+  <div class="photo-section">
+    <div class="photo-full">
+      <img src="IMG_2079.jpeg" alt="Dennis Hannemann sharing the history of Gillespie County Airport">
+    </div>
+    <p class="photo-caption">Dennis Hannemann shares the remarkable history of Gillespie County Airport in the terminal building.</p>
+  </div>
+
+  <p>Then came a turning point: famed entertainer Arthur Godfrey, a frequent visitor to Lyndon B. Johnson's nearby ranch, personally paid to have runway lights installed — changing the trajectory of the airport forever. This airport wasn't given. It was built.</p>
+
+  <!-- TACAERO -->
+  <div class="section-header">
+    <span class="section-num">05 ——</span>
+    <h2>TacAero: Raising the Bar</h2>
+  </div>
+
+  <p>That history set the stage perfectly for the next stop. At TacAero, Kris and Casey walked us through an operation that represents the modern edge of flight training.</p>
+
+  <p>The depth of what they offer is serious: tailwheel training in Carbon Cubs, advanced owner training, and backcountry flying both locally in Texas and up in Northwest Arkansas using Fly Oz strips. Aerobatic training in the GameBird GB1, vintage aircraft like the Waco, warbird experiences including scaled P-51 platforms, and even floatplane training.</p>
+
+  <!-- TACAERO PHOTOS -->
+  <div class="photo-section">
+    <div class="photo-full">
+      <img src="IMG_2083.jpeg" alt="GameBird GB1 aerobatic aircraft in the TacAero hangar">
+    </div>
+    <div class="photo-grid-3">
+      <img src="IMG_2084.jpeg" alt="TacAero presentation to the group">
+      <img src="IMG_2093.jpeg" alt="Carbon Cub on floats in the TacAero hangar">
+      <img src="IMG_2101.jpeg" alt="Group exploring TacAero aircraft">
+    </div>
+    <div class="photo-grid-2">
+      <img src="IMG_2102.jpeg" alt="Top Cub N767CC on the hangar floor">
+      <img src="IMG_2103.jpeg" alt="Members examining aircraft up close">
+    </div>
+    <div class="photo-full">
+      <img src="IMG_2106.jpeg" alt="Carbon Cubs and Carbon Cub UL side by side">
+    </div>
+    <p class="photo-caption">TacAero's fleet includes Carbon Cubs, the GameBird GB1, Top Cubs on floats, and more — a serious operation for serious training.</p>
+  </div>
+
+  <div class="pull-quote">
+    <p>With a VR headset on, you can move through the structural, electrical, and fuel systems of the GameBird and actually visualize how the aircraft is built and operates. It's a completely different way to learn an airplane.</p>
+  </div>
+
+  <p>There was also a strong connection back to last year's fly-out, with TacAero working closely with both Fly Oz and Game Composites as the factory trainer for the GB1. For anyone in the club interested in advancing their skills beyond the standard curriculum, this is the kind of operation worth knowing about.</p>
+
+  <!-- RETURN -->
+  <div class="section-header">
+    <span class="section-num">06 ——</span>
+    <h2>The Ride Home</h2>
+  </div>
+
+  <p>We wrapped up with a picnic lunch, good conversation, and a group that clearly didn't want the day to end. It's the kind of gathering where conversations pick up right where they left off, and new ones start just as easily. Eventually, crews loaded up and launched for home.</p>
+
+  <p>Shortly after departure, Houston Center lit up with call after call:</p>
+
+  <div class="pull-quote">
+    <p>"VFR request… flight following to McKinney…"<br>Again and again.</p>
+    <cite>— Houston Center, as the TFC conga line headed north</cite>
+  </div>
+
+  <p>The return flight was just as smooth — VFR flight following at 7,500 feet, cool air and clear skies. As we approached the Dallas area, we secured a Class Bravo transition, delivering incredible views of downtown Dallas and a direct pass over Love Field. A pretty special way to wrap up the day.</p>
+
+  <!-- RETURN PHOTOS -->
+  <div class="photo-section">
+    <div class="photo-grid-2">
+      <img src="IMG_2113.jpeg" alt="Downtown Dallas from above during the Class Bravo transition">
+      <img src="IMG_2044.jpeg" alt="Wing shot over the Texas landscape at sunset">
+    </div>
+    <p class="photo-caption">The return: a Class Bravo transition gave the group stunning views of downtown Dallas and a flyover of Love Field.</p>
+  </div>
+
+  <!-- CLOSING -->
+  <div class="closing">
+    <span class="closing-mark">"</span>
+    <p>We don't just talk about aviation… we go live it.</p>
+
+    <p style="font-size:1rem; margin-top:1.5rem;">Great airplanes. Great people. A day that reminds you why you started flying in the first place. That's Texins Flying Club — and it's only getting better.</p>
+
+    <div class="byline" style="margin-top: 2rem;">— Texins Flying Club &nbsp;·&nbsp; Spring Fly-Out &nbsp;·&nbsp; Gillespie County Airport</div>
+  </div>
+
+</article>
+
+<footer>
+  &copy; Texins Flying Club &nbsp;·&nbsp; 9 Aircraft &nbsp;·&nbsp; 22 People &nbsp;·&nbsp; One Incredible Day
+</footer>
+
+</body>
+</html>
